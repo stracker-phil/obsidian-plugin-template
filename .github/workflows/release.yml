@@ -1,10 +1,18 @@
 name: Release Obsidian plugin
 
+# Change "plugin.zip" to match the plugin ID from manifest.json.
+env:
+  PLUGIN_ZIP_NAME: plugin.zip
+
 on:
+    workflow_dispatch:
     push:
         tags:
             # Trigger when a new tag is pushed
             - "*"
+
+permissions:
+    contents: write
 
 jobs:
     build:
@@ -26,7 +34,7 @@ jobs:
             -   name: Create zip archive
                 run: |
                     cd dist
-                    zip -r ../mention-things.zip .
+                    zip -r ../${{ env.PLUGIN_ZIP_NAME }} .
 
             -   name: Create release
                 env:
@@ -37,4 +45,4 @@ jobs:
                     gh release create "$tag" \
                       --title="$tag" \
                       --draft \
-                      mention-things.zip dist/main.js dist/manifest.json
+                      ${{ env.PLUGIN_ZIP_NAME }} dist/main.js dist/styles.css dist/manifest.json
